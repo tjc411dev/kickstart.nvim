@@ -150,6 +150,8 @@ vim.o.splitbelow = true
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
+vim.opt.grepprg = 'rg --vimgrep --no-heading --with-filename --line-number'
+
 -- Preview substitutions live, as you type!
 vim.o.inccommand = 'split'
 
@@ -171,6 +173,7 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' })
+vim.api.nvim_set_keymap('n', '<leader>sw', ':Telescope grep_string<CR>', { noremap = true, silent = true, desc = '[S]earch current [W]ord (grep_string)' })
 
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
@@ -463,9 +466,13 @@ require('lazy').setup({
         callback = function(ev)
           local opts = { buffer = ev.buf }
           -- Go to declaration
-          vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+          vim.keymap.set('n', 'gD', function()
+               vim.lsp.buf.definition()
+          end, { noremap = true, silent = true, desc = 'Go to Declaration' })
           -- Go to definition
-          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+          vim.keymap.set('n', 'gd', function()
+               vim.lsp.buf.definition()
+          end, { noremap = true, silent = true, desc = 'Go to Definition' })
           -- Go to implementation
           vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
           -- Optional: Hover documentation
