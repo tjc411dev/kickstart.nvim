@@ -170,6 +170,7 @@ vim.o.confirm = true
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' })
 
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
@@ -257,6 +258,11 @@ rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added via a link or github org/name. To run setup automatically, use `opts = {}`
   { 'NMAC427/guess-indent.nvim', opts = {} },
+  {
+    'neovim/nvim-lspconfig',
+    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
+  },
 
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
   -- If you prefer to call `setup` explicitly, use:
@@ -416,6 +422,10 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
+      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
+      vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
 
       -- This runs on LSP attach per buffer (see main LSP attach function in 'neovim/nvim-lspconfig' config for more info,
       -- it is better explained there). This allows easily switching between pickers if you prefer using something else!
@@ -448,6 +458,18 @@ require('lazy').setup({
           -- Useful when you're not sure what type a variable is and you want to see
           -- the definition of its *type*, not where it was *defined*.
           vim.keymap.set('n', 'grt', builtin.lsp_type_definitions, { buffer = buf, desc = '[G]oto [T]ype Definition' })
+        end,
+        group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+        callback = function(ev)
+          local opts = { buffer = ev.buf }
+          -- Go to declaration
+          vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+          -- Go to definition
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+          -- Go to implementation
+          vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+          -- Optional: Hover documentation
+          vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
         end,
       })
 
@@ -600,7 +622,7 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -898,6 +920,17 @@ require('lazy').setup({
         end,
       })
     end,
+  },
+
+  -- in the return {} of your lazy.nvim setup:
+  {
+    'nvim-tree/nvim-tree.lua',
+    version = '*',
+    lazy = false,
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function() require('nvim-tree').setup {} end,
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
