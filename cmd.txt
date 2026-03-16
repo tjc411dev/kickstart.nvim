@@ -1,0 +1,2 @@
+<Space>sw - :Telescope grep_string
+<Space>sg - :Telescope live_grep
