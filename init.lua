@@ -175,6 +175,16 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' })
 vim.api.nvim_set_keymap('n', '<leader>sw', ':Telescope grep_string<CR>', { noremap = true, silent = true, desc = '[S]earch current [W]ord (grep_string)' })
 
+-- Toggle terminal at the bottom
+vim.keymap.set('n', '<leader>t', ':botright 15split | terminal<CR>', { noremap = true, silent = true })
+-- Exit terminal mode easily
+vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true })
+-- Move between splits efficiently
+vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]], { noremap = true })
+vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]], { noremap = true })
+vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]], { noremap = true })
+vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]], { noremap = true })
+
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {
@@ -466,13 +476,9 @@ require('lazy').setup({
         callback = function(ev)
           local opts = { buffer = ev.buf }
           -- Go to declaration
-          vim.keymap.set('n', 'gD', function()
-               vim.lsp.buf.definition()
-          end, { noremap = true, silent = true, desc = 'Go to Declaration' })
+          vim.keymap.set('n', 'gD', function() vim.lsp.buf.definition() end, { noremap = true, silent = true, desc = 'Go to Declaration' })
           -- Go to definition
-          vim.keymap.set('n', 'gd', function()
-               vim.lsp.buf.definition()
-          end, { noremap = true, silent = true, desc = 'Go to Definition' })
+          vim.keymap.set('n', 'gd', function() vim.lsp.buf.definition() end, { noremap = true, silent = true, desc = 'Go to Definition' })
           -- Go to implementation
           vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
           -- Optional: Hover documentation
@@ -938,6 +944,10 @@ require('lazy').setup({
       'nvim-tree/nvim-web-devicons',
     },
     config = function() require('nvim-tree').setup {} end,
+  },
+  {
+    'nvim-tree/nvim-web-devicons', -- Optional, for file icons
+    lazy = false,
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
